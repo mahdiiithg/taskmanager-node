@@ -2,13 +2,21 @@ const express = require("express");
 const auth = require("../middleware/auth");
 const router = new express.Router();
 const Tasks = require("../models/tasks");
+const { notifyUser } = require("../middleware/notification");
+const Notification = require("../models/notification");
+const { io } = require("..");
+const { createItem, updateItem, deleteItem } = require("../middleware/crudOperations");
 
-router.post("/tasks", auth, async (req, res) => {
+router.post("/tasks", auth, notifyUser('New item created') ,async (req, res) => {
   const task = new Tasks({
     ...req.body,
     owner: req.user._id,
+    // category:
   });
+
+  // console.log("req.body", req.body.description);
   try {
+    await createItem(req.body)
     await task.save();
     res.status(201).send(task);
   } catch (e) {
@@ -17,31 +25,30 @@ router.post("/tasks", auth, async (req, res) => {
   // task.save().then(() => res.status(201).send(task)).catch(e => res.status(400).send(e))
 });
 
-
 router.get("/tasks", auth, async (req, res) => {
-  const match = {}
-  const sort = {}
+  const match = {};
+  const sort = {};
 
-  if(req.query.status) {
-    match.status = req.query.status === "true"
+  if (req.query.status) {
+    match.status = req.query.status === "true";
   }
-  
-  if(req.query.sortBy) {
-    const parts = req.query.sortBy.split(':')
-    sort[parts[0]] = parts[1] === 'desc' ? -1 : 1
+
+  if (req.query.sortBy) {
+    const parts = req.query.sortBy.split(":");
+    sort[parts[0]] = parts[1] === "desc" ? -1 : 1;
   }
 
   try {
     // const tasks = await Tasks.find({ owner: req.user._id });
     await req.user.populate({
-      path: 'tasks',
+      path: "tasks",
       match,
       options: {
         limit: parseInt(req.query.limit),
         skip: parseInt(req.query.skip),
-        sort
-      }
-    })
+        sort,
+      },
+    });
     res.send(req.user.tasks);
   } catch (e) {
     res.status(400).send(e);
@@ -59,6 +66,18 @@ router.get(`/tasks/:id`, auth, async (req, res) => {
   }
 });
 
+router.get(`/tasks/category/:id`, auth, async (req, res) => {
+  const category = req.params.id;
+
+  try {
+    const taks = await Tasks.find({ category, owner: req.user._id });
+    if (!taks) return res.status(404).send();
+    res.send(taks);
+  } catch (e) {
+    res.status(500).send(e);
+  }
+});
+
 router.patch(`/tasks/:id`, auth, async (req, res) => {
   const updates = Object.keys(req.body);
   const allowUpdates = ["description", "status"];
@@ -66,6 +85,7 @@ router.patch(`/tasks/:id`, auth, async (req, res) => {
   if (!isValidOpe) res.status(400).send({ error: "Inavlid Update" });
 
   try {
+    await updateItem(req.params.id, req.body) 
     const task = await Tasks.findOne({
       _id: req.params.id,
       owner: req.user._id,
@@ -83,7 +103,11 @@ router.patch(`/tasks/:id`, auth, async (req, res) => {
 
 router.delete(`/tasks/:id`, auth, async (req, res) => {
   try {
-    const task = await Tasks.findOneAndDelete({_id: req.params.id, owner: req.user._id})
+    await deleteItem(req.params.id)
+    const task = await Tasks.findOneAndDelete({
+      _id: req.params.id,
+      owner: req.user._id,
+    });
     if (!task) return res.status(404).send();
     res.send(task);
   } catch (e) {
