@@ -11,7 +11,7 @@ const crudEmitter = require("./events/crudEvents");
 // const multer = require('multer')
 
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 
 const server = http.createServer(app);
 const io = socketIo(server, {
