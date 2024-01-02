@@ -24,6 +24,7 @@ app.use(cors());
 
 app.use(cors({ origin: "*" }));
 app.use(cors({ origin: "http://localhost:3001/" }));
+app.use(cors({ origin: "http://116.203.241.176:3001/" }));
 app.use(cors({ origin: "http://localhost:3002/" }));
 app.use(cors({ origin: "http://localhost:3000/" }));
 
