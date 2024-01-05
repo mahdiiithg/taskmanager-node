@@ -34,12 +34,12 @@ const UserSchema = new mongoose.Schema({
     },
   },
   age: {
-    type: Number,
-    validate(value) {
-      if (value < 0) {
-        throw new Error("Age is Not positive");
-      }
-    },
+    type: String,
+    // validate(value) {
+    //   if (value < 0) {
+    //     throw new Error("Age is Not positive");
+    //   }
+    // },
   },
   tokens: [
     {
