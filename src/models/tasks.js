@@ -8,15 +8,24 @@ const TaskSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    category: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ef: "Categories",
+    name: {
+      type: String,
+      // required: true,
+      trim: true,
     },
-    reminder: {
+    color: {
       type: String,
       // required: true,
       // trim: true,
+    },
+    // reminder: {
+    //   type: String,
+    //   // required: true,
+    //   // trim: true,
+    // },
+    dueDate: {
+      type: Date,
+      default: null, // Sets the default value to the current date
     },
     status: {
       type: Boolean,
@@ -30,6 +39,7 @@ const TaskSchema = new mongoose.Schema(
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Categories",
+      default: null,
     },
   },
   {

@@ -80,7 +80,7 @@ router.get(`/tasks/category/:id`, auth, async (req, res) => {
 
 router.patch(`/tasks/:id`, auth, async (req, res) => {
   const updates = Object.keys(req.body);
-  const allowUpdates = ["description", "status"];
+  const allowUpdates = ["description", "status", "name", "dueDate", "category", "color"];
   const isValidOpe = updates.every((update) => allowUpdates.includes(update));
   if (!isValidOpe) res.status(400).send({ error: "Inavlid Update" });
 
