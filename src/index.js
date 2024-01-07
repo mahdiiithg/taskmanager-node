@@ -1,7 +1,8 @@
 const express = require("express");
+require("./db/mongose");
 const http = require("http");
 const socketIo = require("socket.io");
-require("./db/mongose");
+
 const userRouter = require("./router/users");
 const tasksRouter = require("./router/tasks");
 const categoryRouter = require("./router/categories");
