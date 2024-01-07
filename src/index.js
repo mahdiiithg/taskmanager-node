@@ -12,6 +12,11 @@ const crudEmitter = require("./events/crudEvents");
 
 const app = express();
 const port = process.env.PORT || 3000;
+app.use(cors());
+app.use(cors({
+  origin: ['http://116.203.241.176:3000'],
+}));
+
 
 const server = http.createServer(app);
 const io = socketIo(server, {
@@ -20,9 +25,6 @@ const io = socketIo(server, {
   },
 });
 
-app.use(cors());
-
-console.log("process.env.PORT", process.env.PORT);
 
 app.use(express.json());
 app.use(userRouter);
