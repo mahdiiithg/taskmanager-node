@@ -2,6 +2,7 @@ const express = require("express");
 const router = new express.Router();
 const auth = require("../middleware/auth");
 const Categories = require("../models/categories");
+const Tasks = require("../models/tasks");
 
 router.post("/category", auth, async (req, res) => {
   const category = new Categories({
@@ -33,6 +34,9 @@ router.delete("/category/:id", auth, async (req, res) => {
     _id: req.params.id,
   });
   try {
+    // Delete tasks associated with the category
+    await Tasks.deleteMany({ category: req.params.id, owner: req.user._id });
+
     if (!category) return res.status(404).send();
     res.status(201).send();
   } catch (error) {
