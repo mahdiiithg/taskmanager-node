@@ -25,9 +25,9 @@ const io = socketIo(server, {
 
 
 app.use(express.json());
-app.use(userRouter);
-app.use(tasksRouter);
-app.use(categoryRouter);
+app.use('/api', userRouter);
+app.use('/api', tasksRouter);
+app.use('/api', categoryRouter);
 
 app.listen(port, () => {
   console.log("server is up on port", port);

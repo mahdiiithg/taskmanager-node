@@ -5,7 +5,7 @@ const router = new express.Router();
 const User = require("../models/user");
 const auth = require("../middleware/auth");
 
-router.post("/api/users", async (req, res) => {
+router.post("/users", async (req, res) => {
   const user = new User(req.body);
 
   try {
@@ -14,14 +14,6 @@ router.post("/api/users", async (req, res) => {
   } catch (e) {
     res.status(400).send(e);
   }
-
-  // OLD CODE
-  // user
-  //   .save()
-  //   .then(() =>
-  //     // console.log("res save user", res.send(user))
-  //     res.status(201).send(user)
-  //   ).catch(e => res.status(400).send(e))
 });
 
 router.post("/users/login", async (req, res) => {
