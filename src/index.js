@@ -97,4 +97,6 @@ server.listen(3002, () => {
   console.log("Server is running on port");
 });
 
+// Listen on both IPv6 and IPv4 addresses
+
 module.exports = { server, io };
