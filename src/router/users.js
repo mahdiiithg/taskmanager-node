@@ -100,7 +100,7 @@ router.get(`/users/:id`, async (req, res) => {
 
 router.patch(`/users/me`, auth, async (req, res) => {
   const updates = Object.keys(req.body);
-  const allowUpdates = ["name", "age", "email", "password"];
+  const allowUpdates = ["name", "age", "email", "password", "language"];
   const isValidOpe = updates.every((update) => allowUpdates.includes(update));
   if (!isValidOpe) res.status(400).send({ error: "Inavlid Update" });
 
