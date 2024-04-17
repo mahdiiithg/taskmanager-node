@@ -12,9 +12,8 @@ const crudEmitter = require("./events/crudEvents");
 // const multer = require('multer')
 
 const app = express();
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 8082;
 app.use(cors());
-
 
 const server = http.createServer(app);
 const io = socketIo(server, {
@@ -23,11 +22,10 @@ const io = socketIo(server, {
   },
 });
 
-
 app.use(express.json());
-app.use('/api', userRouter);
-app.use('/api', tasksRouter);
-app.use('/api', categoryRouter);
+app.use("/api", userRouter);
+app.use("/api", tasksRouter);
+app.use("/api", categoryRouter);
 
 app.listen(port, () => {
   console.log("server is up on port", port);
@@ -51,9 +49,8 @@ const goodFeelingSentences = [
   "Stay strong, stay positive.",
   "Love more, worry less.",
   "Be kind to yourself.",
-  "Cherish every tiny moment."
+  "Cherish every tiny moment.",
 ];
-
 
 // CRUD event listeners
 crudEmitter.on("create", (item) => {
@@ -93,8 +90,23 @@ function getRandomSentence() {
   return goodFeelingSentences[randomIndex];
 }
 
-server.listen(3002, () => {
-  console.log("Server is running on port");
+// ! WEBRTC SEBSOCKET
+io.on("connection", (socket) => {
+  socket.emit("me", socket.id);
+  socket.on("disconnect", () => {
+      socket.broadcast.emit("callEnded")
+  });
+  socket.on("callUser", ({ userToCall, signalData, from, name }) => {
+    console.log("callUser", from);
+      io.to(userToCall).emit("callUser", { signal: signalData, from, name });
+  });
+  socket.on("answerCall", (data) => {
+      io.to(data.to).emit("callAccepted", data.signal)
+  });
+});
+
+server.listen(8082, () => {
+  console.log("Server is running on port", 8082);
 });
 
 // Listen on both IPv6 and IPv4 addresses

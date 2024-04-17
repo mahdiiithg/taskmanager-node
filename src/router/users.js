@@ -12,7 +12,7 @@ router.post("/users", async (req, res) => {
     await user.save();
     res.status(201).send(user);
   } catch (e) {
-    res.status(400).send(e);
+    res.status(400).send("user could not be add, check you email or password");
   }
 });
 
@@ -25,7 +25,9 @@ router.post("/users/login", async (req, res) => {
     const token = await user.generateAuthToken();
     res.send({ user: user.getPublicProfile(), token });
   } catch (e) {
-    res.status(404).send(e);
+    res
+      .status(404)
+      .send("user could not be fount, check you email and password");
   }
 });
 
@@ -36,9 +38,9 @@ router.post("/users/logout", auth, async (req, res) => {
       return token.token !== req.token;
     });
     await req.user.save();
-    res.status(200).send();
+    res.status(200).send('logout was successful');
   } catch (e) {
-    res.status(500).send(e);
+    res.status(500).send('can not logout please try again');
   }
 });
 
@@ -79,7 +81,7 @@ router.delete("/users/me", auth, async (req, res) => {
     }
     // Delete using deleteOne as an alternative to remove()
     await User.deleteOne({ _id: req.user._id });
-    
+
     res.status(200).send({ message: "User deleted successfully" });
   } catch (e) {
     res.status(500).send(e);
@@ -141,8 +143,10 @@ router.post(
   auth,
   upload.single("avatar"),
   async (req, res) => {
-
-    const buffer = await sharp(req.file.buffer).resize({width: 200, height: 200}).png().toBuffer()
+    const buffer = await sharp(req.file.buffer)
+      .resize({ width: 200, height: 200 })
+      .png()
+      .toBuffer();
 
     // req.user.avatar = req.file.buffer;
     req.user.avatar = buffer;
